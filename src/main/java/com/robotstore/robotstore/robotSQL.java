@@ -7,8 +7,8 @@ import java.util.Objects;
 
 @Entity
 //@Table(name = "test")
-@Table(name = "mainTable")
-public class Users {
+@Table(name = "robots")
+public class robotSQL {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,9 +37,9 @@ public class Users {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Users users = (Users) o;
-        return Objects.equals(id, users.id) &&
-                Objects.equals(name, users.name);
+        robotSQL robots = (robotSQL) o;
+        return Objects.equals(id, robots.id) &&
+                Objects.equals(name, robots.name);
     }
 
     @Override
@@ -52,7 +52,6 @@ public class Users {
         JSONObject object = new JSONObject();
         object.put("id", id);
         object.put("name", name);
-
         return object;
     }
 

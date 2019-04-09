@@ -17,6 +17,9 @@ public class HomeController {
     @Autowired
     private minimumRepository minimumRepository;
 
+    @Autowired
+    private robotSQLRepository robotsRepository;
+
     @GetMapping("/findStart")
     public String findStart()
     {
@@ -57,13 +60,16 @@ public class HomeController {
     @GetMapping("/robot/{id}")
     public String getUser(@PathVariable String id)
     {
-        if (usersRepository.existsById(Long.parseLong(id))) {
-            Optional<Users> usersOptional = usersRepository.findById(Long.parseLong(id));
-            Users users = usersOptional.orElseThrow(RuntimeException::new);
 
-            /*return "HTTP Get was called, find robot by id : " + id
-                    + " - robot found : " + users.toString();*/
-            return  users.toString();
+        if (robotsRepository.existsById(Long.parseLong(id))) {
+            Optional<robotSQL> robotsOptional = robotsRepository.findById(Long.parseLong(id));
+            if (!robotsOptional.isPresent())
+                throw new robotNotFoundException("id-" + id);
+
+            robotSQL robots = robotsOptional.orElseThrow(RuntimeException::new);
+
+
+            return robots.toString();
         }
         else return "HTTP Get was called, find robot by id : " + id
                    + " - robot not found !";
