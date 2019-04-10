@@ -6,8 +6,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-//@Table(name = "test")
-@Table(name = "mainTable")
+@Table(name = "test")
 public class minimumInfo {
 
     @Id

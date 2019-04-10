@@ -5,14 +5,11 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class HomeController {
-
-    @Autowired
-    private UsersRepository usersRepository;
 
     @Autowired
     private minimumRepository minimumRepository;
@@ -37,16 +34,14 @@ public class HomeController {
     }
 
     @GetMapping("/find")
-    //public List<Users> find()
     public String find()
     {
-        List<Users> list = new ArrayList<>();
-        list = usersRepository.findAll();
+        List<robotSQL> list = new ArrayList<>();
+        list = robotsRepository.findAll();
 
         JSONObject object = new JSONObject();
-        object.put("items", list);
+        object.put("robots", list);
 
-        //return usersRepository.findAll();
         return object.toString();
     }
 
@@ -56,57 +51,51 @@ public class HomeController {
         return "working";
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    // GET d'un robot en fonction de son ID
+    // fonction renvoyant un String au format JSON
     @GetMapping("/robot/{id}")
-    public String getUser(@PathVariable String id)
+    public String getRobot(@PathVariable String id)
     {
-
         if (robotsRepository.existsById(Long.parseLong(id))) {
             Optional<robotSQL> robotsOptional = robotsRepository.findById(Long.parseLong(id));
-            if (!robotsOptional.isPresent())
-                throw new robotNotFoundException("id-" + id);
-
-            robotSQL robots = robotsOptional.orElseThrow(RuntimeException::new);
-
-
-            return robots.toString();
+            return robotsOptional.orElseThrow(RuntimeException::new).toString();
         }
-        else return "HTTP Get was called, find robot by id : " + id
-                   + " - robot not found !";
-    }
+        else {
+            JSONObject object = new JSONObject();
+            object.put("id", "Error");
+            object.put("info", "GET was called with id " + id + " - robot not found, no id matching the request");
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
-    @GetMapping("/http-servlet-response")
-    public String usingHttpServletResponse(HttpServletResponse response) {
-
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS, POST, DELETE");
-        response.setHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept, X-Auth-Token, X-Csrf-Token, WWW-Authenticate, Authorization");
-        response.setHeader("Access-Control-Allow-Credentials", "false");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.addHeader("Baeldung-Example-Header", "Value-HttpServletResponse");
-        return "Response with header using HttpServletResponse";
+            return object.toString();
+        }
     }
 
     @PostMapping
-    public String createUser()
+    public String createRobot()
     {
         return "HTTP POST was called";
     }
 
-    @DeleteMapping("/robot/{userId}")
-    public String deleteUser(@PathVariable String userId)
+    @DeleteMapping("/robot/{id}")
+    public String deleteRobot(@PathVariable String id)
     {
+        if (robotsRepository.existsById(Long.parseLong(id))) {
+            /*
+            Optional<robotSQL> robotsOptional = robotsRepository.findById(Long.parseLong(id));
+            if (!robotsOptional.isPresent())
+                throw new robotNotFoundException("id-" + id);
 
+            return robotsOptional.orElseThrow(RuntimeException::new).toString();
+             */
 
-        return "HTTP DELETE was called";
-    }
+            robotsRepository.deleteRobot(Integer.parseInt(id));
+            return "DELETE robot " + id + " done";
+        }
+        else {
+            JSONObject object = new JSONObject();
+            object.put("id", "Error");
+            object.put("info", "DELETE was called with id " + id + " - robot not found, no id matching the request");
 
-    @PutMapping("/{userId}")
-    public String updateUser(@PathVariable String userId)
-    {
-
-
-        return "HTTP PUT was called";
+            return object.toString();
+        }
     }
 }

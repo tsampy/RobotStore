@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-//@Table(name = "test")
 @Table(name = "robots")
 public class robotSQL {
 
@@ -14,8 +13,8 @@ public class robotSQL {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "info")
+    private String info;
 
     public Long getId() {
         return id;
@@ -25,12 +24,12 @@ public class robotSQL {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getInfo() {
+        return info;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @Override
@@ -39,28 +38,24 @@ public class robotSQL {
         if (o == null || getClass() != o.getClass()) return false;
         robotSQL robots = (robotSQL) o;
         return Objects.equals(id, robots.id) &&
-                Objects.equals(name, robots.name);
+                Objects.equals(info, robots.info);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, info);
     }
 
     public JSONObject toJSONObject()
     {
         JSONObject object = new JSONObject();
         object.put("id", id);
-        object.put("name", name);
+        object.put("info", info);
         return object;
     }
 
     @Override
     public String toString() {
-        /*return "Users{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';*/
         return toJSONObject().toString();
     }
 }
