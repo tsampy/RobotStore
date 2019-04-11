@@ -6,15 +6,15 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "test")
+@Table(name = "robots")
 public class minimumInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "info")
+    private String info;
 
     public Long getId() {
         return id;
@@ -24,12 +24,12 @@ public class minimumInfo {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getInfo() {
+        return info;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @Override
@@ -38,18 +38,18 @@ public class minimumInfo {
         if (o == null || getClass() != o.getClass()) return false;
         minimumInfo users = (minimumInfo) o;
         return Objects.equals(id, users.id) &&
-                Objects.equals(name, users.name);
+                Objects.equals(info, users.info);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(info);
     }
 
     public JSONObject toJSONObject()
     {
         JSONObject object = new JSONObject();
-        object.put("name", name);
+        object.put("info", info);
 
         return object;
     }

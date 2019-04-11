@@ -1,4 +1,4 @@
-package com.robotstore.robotstore;
+﻿package com.robotstore.robotstore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,15 +17,16 @@ public class HomeController {
     @Autowired
     private robotSQLRepository robotsRepository;
 
+    // DEBUG
     @GetMapping("/findStart")
     public String findStart()
     {
-        List<minimumInfo> list = new ArrayList<>();
-        list = minimumRepository.findAll();
+        //List<minimumInfo> list = new ArrayList<>();
+        //list = minimumRepository.findAll();
 
         JSONArray array = new JSONArray();
-        for (minimumInfo customer : list /*minimumRepository.findAll()*/)
-            array.put(customer.toString());
+        for (minimumInfo robot : minimumRepository.findAll())
+            array.put(robot.toString());
 
         JSONObject object = new JSONObject();
         object.put("start items", array);
@@ -33,6 +34,7 @@ public class HomeController {
         return object.toString().replace("\\","");
     }
 
+    // DEBUG
     @GetMapping("/find")
     public String find()
     {
@@ -51,7 +53,7 @@ public class HomeController {
         return "working";
     }
 
-    // GET d'un robot en fonction de son ID
+    // requete GET d'un robot en fonction de son ID
     // fonction renvoyant un String au format JSON
     @GetMapping("/robot/{id}")
     public String getRobot(@PathVariable String id)
@@ -63,37 +65,34 @@ public class HomeController {
         else {
             JSONObject object = new JSONObject();
             object.put("id", "Error");
-            object.put("info", "GET was called with id " + id + " - robot not found, no id matching the request");
+            object.put("info", "GET was called with id " + id + " - robot not found, id mismatch");
 
             return object.toString();
         }
     }
 
+    // requete POST formatée avec
+    //   => headers : Content-type = application/json
+    //   => body : json contenant les informations
+    // les informations sont récupérées par le paramètres robot, au format robotSQL
     @PostMapping
-    public String createRobot()
+    public String createRobot(@RequestBody robotSQL robot)
     {
-        return "HTTP POST was called";
+        return "Debug - POST request success, robot found : " + robot.toString();
     }
 
+    // requete DELETE d'un robot en fonction de son ID
     @DeleteMapping("/robot/{id}")
     public String deleteRobot(@PathVariable String id)
     {
         if (robotsRepository.existsById(Long.parseLong(id))) {
-            /*
-            Optional<robotSQL> robotsOptional = robotsRepository.findById(Long.parseLong(id));
-            if (!robotsOptional.isPresent())
-                throw new robotNotFoundException("id-" + id);
-
-            return robotsOptional.orElseThrow(RuntimeException::new).toString();
-             */
-
             robotsRepository.deleteRobot(Integer.parseInt(id));
             return "DELETE robot " + id + " done";
         }
         else {
             JSONObject object = new JSONObject();
             object.put("id", "Error");
-            object.put("info", "DELETE was called with id " + id + " - robot not found, no id matching the request");
+            object.put("info", "DELETE was called with id " + id + " - robot not found, id mismatch");
 
             return object.toString();
         }
