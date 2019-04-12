@@ -1,4 +1,12 @@
-﻿package com.robotstore.robotstore;
+﻿/* HomeController.java - Thiéry SAMPY 2019
+ *
+ * the @RestController marks the class as a RESTful controller, every method returns a domain object.
+ *
+ * the @CrossOrigin annotation allows servers to send cross-origin requests.
+ * For security purposes, only the Front-end React application should be allowed -- TO DEFINE IN RC
+ */
+
+package com.robotstore.robotstore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,13 +25,10 @@ public class HomeController {
     @Autowired
     private robotSQLRepository robotsRepository;
 
-    // DEBUG
+    // DEBUG - find minimal data
     @GetMapping("/findStart")
     public String findStart()
     {
-        //List<minimumInfo> list = new ArrayList<>();
-        //list = minimumRepository.findAll();
-
         JSONArray array = new JSONArray();
         for (minimumInfo robot : minimumRepository.findAll())
             array.put(robot.toString());
@@ -34,7 +39,7 @@ public class HomeController {
         return object.toString().replace("\\","");
     }
 
-    // DEBUG
+    // DEBUG - find data
     @GetMapping("/find")
     public String find()
     {
@@ -47,14 +52,16 @@ public class HomeController {
         return object.toString();
     }
 
+    // DEBUG - server status check
     @GetMapping("/status/check")
     public String status()
     {
         return "working";
     }
 
-    // requete GET d'un robot en fonction de son ID
-    // fonction renvoyant un String au format JSON
+    // HTTP GET request
+    // the @PathVariable annotation maps the URI variable {id} to the method argument <id>.
+    // returns a JSON formatted String object
     @GetMapping("/robot/{id}")
     public String getRobot(@PathVariable String id)
     {
@@ -71,18 +78,19 @@ public class HomeController {
         }
     }
 
-    // requete POST formatée avec
+    // HTTP POST request
     //   => headers : Content-type = application/json
-    //   => body : json contenant les informations
-    // les informations sont récupérées par le paramètres robot, au format robotSQL
-    @PostMapping
+    //   => body : info in json format
+    // the @RequestBody annotation maps the POST request body to a robotSQL object
+    @PostMapping("/robot")
     public String createRobot(@RequestBody robotSQL robot)
     {
-        robotsRepository.addRobot("Debug - robot insertion 01");
+        robotsRepository.addRobot(robot.getInfo());
         return "Debug - POST request success, robot found : " + robot.toString();
     }
 
-    // requete DELETE d'un robot en fonction de son ID
+    // HTTP DELETE request
+    // the @PathVariable annotation maps the URI variable {id} to the method argument <id>.
     @DeleteMapping("/robot/{id}")
     public String deleteRobot(@PathVariable String id)
     {
