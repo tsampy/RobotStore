@@ -78,6 +78,7 @@ public class HomeController {
     @PostMapping
     public String createRobot(@RequestBody robotSQL robot)
     {
+        robotsRepository.addRobot("Debug - robot insertion 01");
         return "Debug - POST request success, robot found : " + robot.toString();
     }
 
