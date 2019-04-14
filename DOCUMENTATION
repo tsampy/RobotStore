@@ -1,0 +1,127 @@
+Documentation du projet RobotStore, Thiéry SAMPY, 2019
+
+1. La base de données
+
+  1.1 Base de donnnées utilisée
+
+    La base de données retenue pour le projet est PostgreSQL, en raison de sa license libre.
+
+  1.2 Les tables et leurs structures
+
+	Chaque table contient un identifiant id, de type serial.
+
+    1.2.1 robots
+
+	La table robots contient les informations relatives à chaque robot.
+	Les informations de cette table ne sont jamais effacées, même lorsqu'un robot est effacé, pour éviter une perte d'informations.
+
+	idrobot : l'identifiant unique de chaque robot, de type serial
+	name : texte
+	type : texte
+	batterylife : en heures, entier
+	manufacturer : texte
+	wifi : booleen
+	bluetooth : booleen
+	usb : booleen
+	productcode : texte
+	depth : en mm, entier
+	height : en mm, entier
+	width : en mm, entier
+	weight : en grammes, entier
+	description : texte
+
+
+    1.2.2 catalog
+
+	La table catalog propose un catalogue des robots disponibles. Effacer un robot revient à l'effacer du catalogue.
+
+	idrobot : entier
+	price : entier
+	promotion : pourcentage, entier
+	deliveryprice : entier
+	nb : entier
+	available : nombre de jours avant disponibilite, entier
+
+    1.2.4 medias
+
+	La table medias est une table contenant des liens vers des photos ou des videos des robots
+
+	idrobot : entier
+	link : texte
+	photo : photo ou video, booleen
+	caption : texte
+
+    1.2.5 client
+
+	C'est la table contenant les informations des clients
+
+	idclient : entier, serial
+	login : texte
+	pw : texte
+	name : texte
+	lastname : texte
+	address : texte
+	zip : texte
+	city : texte
+	country : texte
+	mail : texte
+
+    1.2.6 commandes
+
+	La table conservant les commandes des clients
+
+  1.3 Exemples de JSON
+
+robot :
+{
+	"name":"robot_test01",
+	"type":"robot usager",
+	"batterylife":"4",
+	"manufacturer":"SAMPY",
+	"wifi":"true",
+	"bluetooth":"false",
+	"usb":"true",
+	"productcode":"RU01",
+	"depth":"312",
+	"height":"84",
+	"width":"312",
+	"weight":"1225",
+	"description":"Un robot aspirateur autonome"
+}
+
+catalog:
+{
+	"idrobot":"1",
+	"price":"299",
+	"promotion":"0",
+	"deliveryprice":"0",
+	"nb":"12",
+	"available":"0"
+}
+
+client:
+{
+	"login":"test",
+	"pw":"test",
+	"name":"test01.1",
+	"lastname":"test01.2",
+	"address":"test01.3",
+	"zip":"test01.4",
+	"city":"test01.5",
+	"country":"test01.6",
+	"mail":"test01.7"
+}
+
+media:
+{
+	"idrobot":"1",
+	"link":"http://www.exemple.fr/photo1.jpg",
+	"photo":"true",
+	"caption":"Premier modele"
+}
+INSERT 
+    INTO
+        medias
+        (idrobot, link, photo, caption) 
+    VALUES
+        (1,'http://www.truc.fr/photo1.jpg',true,'Premier modele')
