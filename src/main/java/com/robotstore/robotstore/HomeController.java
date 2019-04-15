@@ -1,4 +1,4 @@
-﻿/* HomeController.java - Thiéry SAMPY 2019
+/* HomeController.java - Thiéry SAMPY 2019
  *
  * the @RestController marks the class as a RESTful controller, every method returns a domain object.
  *
@@ -6,12 +6,11 @@
  * For security purposes, only the Front-end React application should be allowed -- TO DEFINE IN RC
  */
 
-package com.robotstore.robotstore;
+package com.javamaster.springwithjpa;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
 
 @RestController
@@ -31,11 +30,12 @@ public class HomeController {
     private clientSQLRepository clientRepository;
 
     // DEBUG - server status check
-    @GetMapping("/status/check")
-    public String status() {
-        return "working";
+    @GetMapping("/check")
+    public String checkServer() {
+        return createJSON("check", "success, the java server is running");
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // catalog getter - HTTP GET request
     // returns string containing a JSON formatted list of robots
     @GetMapping("/catalog")
@@ -46,6 +46,7 @@ public class HomeController {
         return object.toString();
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // catalog getter for a specified number of rows - HTTP GET request
     // returns string containing a JSON formatted list of robots
     @GetMapping("/catalog/{nbItems}")
@@ -56,138 +57,225 @@ public class HomeController {
         return object.toString();
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // client getter with login and password HTTP GET request
     // returns a JSON formatted string client
     @GetMapping("/client/{login}/{pw}")
     public String getClient(@PathVariable String login, @PathVariable String pw) {
         JSONObject object = new JSONObject();
-        object.put("client", clientRepository.getClient(login, pw));
+
+        if (clientRepository.clientExists(login, pw))
+            object.put("client", clientRepository.getClient(login, pw).toString());
+        else object.put("error", "client not found");
 
         return object.toString().replaceAll("\\\\", "");
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // media getter for a given robot id - HTTP GET request
     // returns a JSON formatted string media
     @GetMapping("/medias/{id}")
     public String getMedia(@PathVariable String id) {
         JSONObject object = new JSONObject();
-        object.put("medias", mediasRepository.getMedia(Integer.parseInt(id)));
+        List<mediasSQL> medias = mediasRepository.getMedia(Integer.parseInt(id));
+
+        if (medias.size() == 0)
+            object.put("error", "media not found");
+        else object.put("medias", medias);
 
         return object.toString();
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // robot getter - HTTP GET request
     // the @PathVariable annotation maps the URI variable {id} to the method argument <id>.
     // returns a JSON formatted string robot
     @GetMapping("/robot/{id}")
     public String getRobot(@PathVariable String id) {
+        // does the robot exist ?
         if (robotsRepository.existsById(Long.parseLong(id))) {
             Optional<robotSQL> robotsOptional = robotsRepository.findById(Long.parseLong(id));
             return robotsOptional.orElseThrow(RuntimeException::new).toString();
-        } else return mismatchIDerror("GET", id);
+        } else return mismatchIDError("GET", id);
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // robot creation - HTTP POST request
     //   => headers : Content-type = application/json
     //   => body : robot in json format
     // the @RequestBody annotation maps the POST request body to a robotSQL object
     @PostMapping("/robot")
-    public String addRobot(@RequestBody robotSQL robot) {
-        robotsRepository.addRobot(robot.getName(),
-                robot.getType(),
-                robot.getManufacturer(),
-                robot.getProductcode(),
-                robot.getDescription(),
-                robot.getBatterylife(),
-                robot.getDepth(),
-                robot.getHeight(),
-                robot.getWidth(),
-                robot.getWeight(),
-                robot.isWifi(),
-                robot.isBluetooth(),
-                robot.isUsb());
-        return "Debug - robot POST request success : " + robot.toString();
+    public String addRobot(@RequestBody(required = false) robotSQL robot) {
+        // check if a valid robot is found in the request body
+        // a valid robot is not null
+        // and have at least one valid variable
+        if ((robot != null) && (robot.getName() != null))
+            // a successful POST request returns 1
+            if (robotsRepository.addRobot(robot.getName(),
+                    robot.getType(),
+                    robot.getManufacturer(),
+                    robot.getProductcode(),
+                    robot.getDescription(),
+                    robot.getBatterylife(),
+                    robot.getDepth(),
+                    robot.getHeight(),
+                    robot.getWidth(),
+                    robot.getWeight(),
+                    robot.isWifi(),
+                    robot.isBluetooth(),
+                    robot.isUsb()) == 1)
+                return requestSuccess("POST", "success, " + robot.getName() + " added");
+            else return requestError("POST", "an error occured while adding robot " + robot.getName());
+        else return createJSON("POST", "error, no robot detected");
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     @PostMapping("/client")
-    public String addClient(@RequestBody clientSQL client) {
-        clientRepository.addClient(client.getLogin(),
-                client.getPw(),
-                client.getName(),
-                client.getLastname(),
-                client.getAddress(),
-                client.getZip(),
-                client.getCity(),
-                client.getCountry(),
-                client.getMail());
-        return "Debug - client POST request success : " + client.toString();
+    public String addClient(@RequestBody(required = false) clientSQL client) {
+        // check if a valid client is found in the request body, not null and have at least one valid variable
+        if ((client != null) && (client.getLogin() != null))
+            // the client login can only be added if it doesn't already exist in the database
+            if (!clientRepository.clientExists(client.getLogin()))
+                // a successful POST request returns 1
+                if (clientRepository.addClient(client.getLogin(),
+                        client.getPw(),
+                        client.getName(),
+                        client.getLastname(),
+                        client.getAddress(),
+                        client.getZip(),
+                        client.getCity(),
+                        client.getCountry(),
+                        client.getMail()) == 1)
+                    return requestSuccess("POST", "success, " + client.getLogin() + " has been added");
+                else return requestError("POST", "an error occured while adding client " + client.getLogin());
+            else return requestError("POST", "error : the login " + client.getLogin() + " already exists");
+        else return createJSON("POST", "error, no client detected");
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // adding a robot to the catalog - HTTP POST request
     //   => headers : Content-type = application/json
     //   => body : catalog in json format
     // the @RequestBody annotation maps the POST request body to a catalogSQL object
-    @PostMapping("/catalog")
-    public String addRobotToCatalog(@RequestBody catalogSQL catalog) {
-        catalogRepository.addRobot(catalog.getIdrobot(),
-                catalog.getPrice(),
-                catalog.getPromotion(),
-                catalog.getDeliveryprice(),
-                catalog.getNb(),
-                catalog.getAvailable());
-        return "Debug - catalog POST request success : " + catalog.toString();
+    @PostMapping("/robottocatalog")
+    public String addRobotToCatalog(@RequestBody(required = false) catalogSQL catalog) {
+        // check if a valid catalog is found in the request body, not null and have at least one valid variable
+        if ((catalog != null) && (catalog.getIdrobot() != 0))
+            // the robot can only be added to the catalog if it doesn't already exist in the catalog
+            if (!catalogRepository.isRobotInCatalog(catalog.getIdrobot()))
+                // a successful POST request returns 1
+                if (catalogRepository.addRobot(catalog.getIdrobot(),
+                        catalog.getPrice(),
+                        catalog.getPromotion(),
+                        catalog.getDeliveryprice(),
+                        catalog.getNb(),
+                        catalog.getAvailable()) == 1)
+                    return requestSuccess("POST", "success, media added : " + catalog.toString());
+                else return requestError("POST", "an error occured adding media " + catalog.toString());
+            else return requestError("POST", "error, robot #" + catalog.getIdrobot() + " is already in the catalog");
+        else return createJSON("POST", "error, no catalog detected");
     }
 
+    // CHECKED AND APPROVED -----------------------------------------------------------------
     // media creation - HTTP POST request
     //   => headers : Content-type = application/json
     //   => body : media in json format
     // the @RequestBody annotation maps the POST request body to a mediasSQL object
     @PostMapping("/medias")
-    public String addMedia(@RequestBody mediasSQL media) {
-        mediasRepository.addLink(media.getIdrobot(),
-                media.getLink(),
-                media.isPhoto(),
-                media.getCaption());
-        return "Debug - media POST request success : " + media.toString();
+    public String addMedia(@RequestBody(required = false) mediasSQL media) {
+        // check if a valid media is found in the request body, not null and have at least one valid variable
+        if ((media != null) && (media.getIdrobot() != 0))
+            // a successful POST request returns 1
+            if (mediasRepository.addLink(media.getIdrobot(),
+                    media.getLink(),
+                    media.isPhoto(),
+                    media.getCaption()) == 1)
+                return requestSuccess("POST", "success, media added " + media.toString());
+            else return requestError("POST", "an error occured adding media " + media.toString());
+        else return createJSON("POST", "error, no media detected");
     }
 
     // robot HTTP DELETE request
     // the @PathVariable annotation maps the URI variable {id} to the method argument <id>.
     @DeleteMapping("/robot/{id}")
-    public String deleteRobot(@PathVariable String id, @RequestBody clientSQL client) {
-        // login and password check : only the root superuser is allowed to delete
-        if ((client.getLogin().equals("root")) &&
-                (clientRepository.clientExists(client.getLogin(), client.getPw())))
-            if (catalogRepository.isRobotInCatalog(Integer.parseInt(id))) {
-                catalogRepository.deleteRobot(Integer.parseInt(id));
-                return "DELETE robot from catalog " + id + " done";
-            } else return mismatchIDerror("DELETE", id);
-        else return "DELETE ERROR - Access denied";
+    public String deleteRobot(@PathVariable String id,
+                              @RequestBody(required = false) clientSQL client) {
+        // check if a valid client is found in the request body, not null and have at least one valid variable
+        if ((client != null) && (client.getLogin() != null))
+            // login and password check : only the root superuser is allowed to delete
+            if ((client.getLogin().equals("root")) &&
+                    // the client exists only if login and password match
+                    (clientRepository.clientExists(client.getLogin(), client.getPw())))
+                if (catalogRepository.isRobotInCatalog(Integer.parseInt(id))) {
+                    // a successful DELETE request returns 1
+                    if (catalogRepository.deleteRobot(Integer.parseInt(id)) == 1)
+                        return requestSuccess("DELETE", "robot " + id + " removed from catalog");
+                    else return requestError("DELETE", "an error occured while deleting robot " + id + " from catalog");
+                } else return mismatchIDError("DELETE", id);
+            else return requestError("DELETE", "access denied");
+        else return createJSON("DELETE", "error, no client detected");
     }
 
     // media HTTP DELETE request
     // the @PathVariable annotation maps the URI variable {id} to the method argument <id>.
     @DeleteMapping("/medias/{id}")
-    public String deleteMedia(@PathVariable String id) {
-        if (mediasRepository.existsById(Long.parseLong(id))) {
-            mediasRepository.deleteRobot(Integer.parseInt(id));
-            return "DELETE link from medias " + id + " done";
-        } else return mismatchIDerror("DELETE", id);
+    public String deleteMedia(@PathVariable String id,
+                              @RequestBody(required = false) clientSQL client) {
+        // check if a valid client is found in the request body, not null and have at least one valid variable
+        if ((client != null) && (client.getLogin() != null))
+            // login and password check : only the root superuser is allowed to delete
+            if ((client.getLogin().equals("root")) &&
+                    // the client exists only if login and password match
+                    (clientRepository.clientExists(client.getLogin(), client.getPw())))
+                if (mediasRepository.existsById(Long.parseLong(id))) {
+                    // a successful DELETE request returns 1
+                    if (mediasRepository.deleteRobot(Integer.parseInt(id)) == 1)
+                        return requestSuccess("DELETE", "success : link for robot " + id + " removed from medias");
+                    else return requestError("DELETE", "an error occured deleting media " + id);
+                } else return mismatchIDError("DELETE", id);
+            else return requestError("DELETE", "access denied");
+        else return createJSON("DELETE", "error, no client detected");
     }
 
-    public String mismatchIDerror(String error, String id) {
+    // robot HTTP PUT request
+    // a robot has been purchased, the table catalog must be updated
+    @PutMapping("/robot/{id}/{nbPurchased}")
+    public String purchaseRobot(@PathVariable String id,
+                                @PathVariable String nbPurchased,
+                                @RequestBody(required = false) clientSQL client) {
+        // check if a valid client is found in the request body, not null and have at least one valid variable
+        if ((client != null) && (client.getLogin() != null))
+            // only a registered user can purchase robots
+            if (!clientRepository.clientExists(client.getLogin(), client.getPw()))
+                return requestError("PUT", "Only registered users are allowed to purchase robots");
+            else
+                // a successful UPDATE request returns 1
+                if (catalogRepository.purchaseRobot(Integer.parseInt(id), Integer.parseInt(nbPurchased)) == 1)
+                    return requestSuccess("PUT", nbPurchased + " robots " + id + " purchased");
+                else return requestError("PUT", "an error occured updating the catalog : ");
+        else return createJSON("PUT", "error, no client detected");
+    }
+
+    // ERROR MANAGEMENT ---------------------------------------------------------------------
+    // JSON formatted String
+    public String createJSON(String header, String message) {
         JSONObject object = new JSONObject();
-        object.put("id", "Error");
+        object.put(header, message);
+        return object.toString().replaceAll("\\\\", "");
+    }
 
-        switch (error.toUpperCase()) {
-            case "DELETE":
-                object.put("info", "DELETE was called with id " + id + " - robot not found, id mismatch");
-                break;
-            case "GET":
-                object.put("info", "GET was called with id " + id + " - robot not found, id mismatch");
-                break;
-        }
+    // JSON formatted String for id mismatch error
+    public String mismatchIDError(String httpMethod, String id) {
+        return requestError(httpMethod.toUpperCase(), "was called with id " + id + " - robot not found, id mismatch");
+    }
 
-        return object.toString();
+    // JSON formatted String for request error
+    public String requestError(String httpMethod, String errorMessage) {
+        return createJSON("error", httpMethod + " " + errorMessage);
+    }
+
+    // JSON formatted String for request success
+    public String requestSuccess(String httpMethod, String message) {
+        return createJSON("success", httpMethod + " " + message);
     }
 }

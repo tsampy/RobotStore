@@ -1,4 +1,4 @@
-package com.robotstore.robotstore;
+package com.javamaster.springwithjpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,7 +14,7 @@ public interface clientSQLRepository extends JpaRepository<clientSQL, Long> {
     @Modifying
     @Query(value = "INSERT INTO client(login, pw, name, lastname, address, zip, city, country, mail) " +
             "VALUES(:login,:pw,:name,:lastname,:address,:zip,:city,:country,:mail)", nativeQuery = true)
-    void addClient(@Param("login") String login,
+    int addClient(@Param("login") String login,
                   @Param("pw") String pw,
                   @Param("name") String name,
                   @Param("lastname") String lastname,
@@ -30,8 +30,11 @@ public interface clientSQLRepository extends JpaRepository<clientSQL, Long> {
                         @Param("pw") String pw);
 
     // test the existence of a client
-    // SELECT EXISTS(SELECT * FROM client WHERE login='root2' AND pw='root');
     @Query(value = "SELECT EXISTS(SELECT * FROM client c WHERE c.login=:login AND c.pw=:pw)", nativeQuery = true)
     boolean clientExists(@Param("login") String login,
                          @Param("pw") String pw);
+
+    // test the existence of a client
+    @Query(value = "SELECT EXISTS(SELECT * FROM client c WHERE c.login=:login)", nativeQuery = true)
+    boolean clientExists(@Param("login") String login);
 }

@@ -1,4 +1,4 @@
-package com.robotstore.robotstore;
+package com.javamaster.springwithjpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,10 +14,10 @@ public interface mediasSQLRepository extends JpaRepository<mediasSQL, Long> {
     @Modifying
     @Query(value = "INSERT INTO medias(idrobot, link, photo, caption) " +
             "VALUES(:idrobot,:link,:photo,:caption)", nativeQuery = true)
-    void addLink(@Param("idrobot") int idrobot,
-                  @Param("link") String link,
-                  @Param("photo") boolean photo,
-                  @Param("caption") String caption);
+    int addLink(@Param("idrobot") int idrobot,
+                    @Param("link") String link,
+                    @Param("photo") boolean photo,
+                    @Param("caption") String caption);
 
     // retrieving every medias rows for a given idrobot
     @Query(value = "SELECT * FROM medias WHERE idrobot = :idrobot", nativeQuery = true)
@@ -27,5 +27,5 @@ public interface mediasSQLRepository extends JpaRepository<mediasSQL, Long> {
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM medias m WHERE m.id = :id", nativeQuery = true)
-    void deleteRobot(@Param("id") int id);
+    int deleteRobot(@Param("id") int id);
 }

@@ -1,0 +1,23 @@
+RobotStore
+Java server HTTP mapping
+
+GET REQUESTS -------------------------------
+/check : check the server status
+/catalog :
+/catalog/{nbItems} :
+/client/{login}/{pw} :
+/medias/{id} :
+/robot/{id} :
+
+POST REQUESTS ------------------------------
+/robot : robotSQL :
+/client : clientSQL :
+/robottocatalog : catalogSQL :
+/medias : mediasSQL :
+
+DELETE REQUESTS ----------------------------
+/robot/{id} : clientSQL :
+/medias/{id} : clientSQL :
+
+PUT REQUESTS -------------------------------
+/robot/{id}/{nbPurchased} : clientSQL :

@@ -15,7 +15,7 @@
 	description : texte
 */
 
-package com.robotstore.robotstore;
+package com.javamaster.springwithjpa;
 
 import org.json.JSONObject;
 import javax.persistence.*;
