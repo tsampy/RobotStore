@@ -30,6 +30,9 @@ public class HomeController {
     @Autowired
     private clientSQLRepository clientRepository;
 
+    @Autowired
+    private robotDescriptionSQLRepository robotDescriptionRepository;
+
     // DEBUG - server status check
     @GetMapping("/")
     public String checkServer() {
@@ -100,6 +103,28 @@ public class HomeController {
         if (medias.size() == 0)
             object.put("error", "media not found");
         else object.put("medias", medias);
+
+        return object.toString();
+    }
+
+    // HTTP GET request
+    // medias getter
+    // returns a JSON formatted string media
+    @GetMapping("/medias")
+    public String getMedias() {
+        JSONObject object = new JSONObject();
+        object.put("medias", mediasRepository.findAll());
+
+        return object.toString();
+    }
+
+    // HTTP GET request
+    // medias getter
+    // returns a JSON formatted string media
+    @GetMapping("/robotsDescription")
+    public String getRobotsDescription() {
+        JSONObject object = new JSONObject();
+        object.put("description", robotDescriptionRepository.findAll());
 
         return object.toString();
     }
