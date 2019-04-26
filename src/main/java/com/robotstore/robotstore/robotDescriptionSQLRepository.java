@@ -1,4 +1,4 @@
-package com.javamaster.springwithjpa;
+package com.robotstore.robotstore;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

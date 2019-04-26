@@ -1,4 +1,4 @@
-package com.javamaster.springwithjpa;
+package com.robotstore.robotstore;
 
 public class robotNotFoundException extends RuntimeException {
 

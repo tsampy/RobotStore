@@ -6,7 +6,7 @@
  * For security purposes, only the Front-end React application should be allowed -- TO DEFINE IN RC
  */
 
-package com.javamaster.springwithjpa;
+package com.robotstore.robotstore;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +121,7 @@ public class HomeController {
     // HTTP GET request
     // medias getter
     // returns a JSON formatted string media
-    @GetMapping("/robotsDescription")
+    @GetMapping("/robotspecs")
     public String getRobotsDescription() {
         JSONObject object = new JSONObject();
         object.put("description", robotDescriptionRepository.findAll());

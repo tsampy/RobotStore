@@ -7,7 +7,7 @@
 	available : nombre de jours avant disponibilite, entier
 * */
 
-package com.javamaster.springwithjpa;
+package com.robotstore.robotstore;
 
 import org.json.JSONObject;
 import javax.persistence.*;
