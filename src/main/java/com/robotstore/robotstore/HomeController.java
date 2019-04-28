@@ -82,13 +82,9 @@ public class HomeController {
     // returns a JSON formatted string client
     @GetMapping("/client/{login}/{pw}")
     public String getClient(@PathVariable String login, @PathVariable String pw) {
-        JSONObject object = new JSONObject();
-
         if (clientRepository.clientExists(login, pw))
-            object.put("client", clientRepository.getClient(login, pw).toString());
-        else object.put("error", "client not found");
-
-        return object.toString().replaceAll("\\\\", "");
+            return clientRepository.getClient(login, pw).toString();
+        else return requestError("GET", "client error");
     }
 
     // CHECKED AND APPROVED -----------------------------------------------------------------
