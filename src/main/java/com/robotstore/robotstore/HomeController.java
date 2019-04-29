@@ -82,9 +82,15 @@ public class HomeController {
     // returns a JSON formatted string client
     @GetMapping("/client/{login}/{pw}")
     public String getClient(@PathVariable String login, @PathVariable String pw) {
+        // if the client (login and pw) is found
         if (clientRepository.clientExists(login, pw))
             return clientRepository.getClient(login, pw).toString();
-        else return requestError("GET", "client error");
+        else
+            // user login found
+            if (clientRepository.clientExists(login))
+                return requestError("", "mot de passe invalide");
+            // user login not found
+            else return requestError("", "utilisateur inconnu : " + login);
     }
 
     // CHECKED AND APPROVED -----------------------------------------------------------------
