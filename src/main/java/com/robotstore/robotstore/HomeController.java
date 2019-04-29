@@ -88,9 +88,9 @@ public class HomeController {
         else
             // user login found
             if (clientRepository.clientExists(login))
-                return requestError("", "mot de passe invalide");
+                return requestError(login, ": mot de passe invalide");
             // user login not found
-            else return requestError("", "utilisateur inconnu : " + login);
+            else return requestError(login, ": utilisateur inconnu");
     }
 
     // CHECKED AND APPROVED -----------------------------------------------------------------
