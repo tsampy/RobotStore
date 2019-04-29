@@ -2,11 +2,11 @@
 
 Online robot shop store.
 
-Front-end : ReactJS application.
+Java application using :
+* Spring Boot,
+* REST web service,
+* JSON request,
+* Data accessed via Java Persistence API.
 
-Back-end : Java application using Spring Boot,
-REST web service,
-JSON request,
-Data accessed via Java Persistence API.
-
-Cloud platform : Heroku
+The app is deployed on Heroku, available at :
+[https://robotstore.herokuapp.com/](https://robotstore.heroluapp.com/)
