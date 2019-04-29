@@ -9,4 +9,4 @@ Java application using :
 * Data accessed via Java Persistence API.
 
 The app is deployed on Heroku, available at :
-[https://robotstore.herokuapp.com/](https://robotstore.heroluapp.com/)
+[https://robotstore.herokuapp.com/](https://robotstore.herokuapp.com/)
