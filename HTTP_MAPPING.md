@@ -15,7 +15,7 @@ Java server HTTP mapping
     * /robottocatalog : catalogSQL : add a existing robot in catalog
     * /medias : mediasSQL : add media for a given robot id
 
-*DELETE REQUESTS (only allowed for superuser root) ---
+* DELETE REQUESTS (only allowed for superuser root) ---
     * /robot/{id} : clientSQL :
     * /medias/{id} : clientSQL :
 
