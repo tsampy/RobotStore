@@ -10,3 +10,6 @@ Java application using :
 
 The app is deployed on Heroku, available at :
 [https://robotstore.herokuapp.com/](https://robotstore.herokuapp.com/)
+
+This java server is used by a robot store client, written in React, available at :
+[https://robotstorereact.herokuapp.com/](https://robotstorereact.herokuapp.com/)
