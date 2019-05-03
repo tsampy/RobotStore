@@ -110,6 +110,18 @@ public class HomeController {
     }
 
     // HTTP GET request
+    // robot getter for the last robotID in the table
+    // needed to add medias and robot in catalog
+    // returns a JSON formatted string media
+    @GetMapping("/lastid")
+    public String getLastID() {
+        JSONObject object = new JSONObject();
+        object.put("lastID", robotsRepository.getLastID());
+        
+        return object.toString();
+    }
+
+    // HTTP GET request
     // medias getter
     // returns a JSON formatted string media
     @GetMapping("/medias")
