@@ -22,7 +22,7 @@ The project is deployed on a Heroku cloud, sources are available at GitHub.
 
 ## RobotStore application
 
-The RobotStore application is written in JAva, using Spring Boot.
+The RobotStore application is written in Java, using Spring Boot.
 JPA is used tp communicate with the database, and propose a RESTfull server, available via HTTP requests.
 The Java server returns json formatted results.
 
